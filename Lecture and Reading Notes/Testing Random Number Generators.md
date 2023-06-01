@@ -57,7 +57,7 @@ Which is the same as the [chi-squared test statistic](https://en.wikipedia.org/w
 ----
 General form of test statistic is:
 
-$T = \sum^{n_{\text{classes}}}_{i=1} \frac{(n_{\text{observed}, i} - n_{\text{expected},i})^2}{n_{\text{expected}, i}}$
+$T = \sum^{n_{\text{classes}}}_{i=1} \frac{(n_{\text{observed}, i} - n_{\text{expected},i})^2}{n_{\text{expected}, i}}}$
 
 - Evaluated with a $\chi^2$ distribution with $df$ degrees of freedom.
 - Generally $df = n_{\text{classes}} - 1 - m$ 
