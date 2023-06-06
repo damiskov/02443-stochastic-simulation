@@ -26,22 +26,15 @@ def chi_squared(numbers, num_bins):
         test_stat += ((n_expected-n_observed)**2)/n_expected
     return test_stat
 
-def kolmogorov_smirnov(numbers, num_bins):
-    ecdf = [0]
+def kolmogorov_smirnov(numbers):
+
     l = min(numbers)
     h = max(numbers)
-    step = int((h-l)/num_bins)
-    n = len(numbers)
-
-    for i in range(1, num_bins+1):
-        ecdf.append(len([j for j in numbers if j <= l+step*i]))
-    
-    ecdf = np.array(ecdf)
-    ideal = np.linspace(l, h, n)
-
+    ecdf = sorted(numbers)
+    ideal = np.linspace(l, h, len(numbers))
     D = max(abs(np.array(ecdf) - np.array(ideal)))
-    test_stat =  (np.sqrt(n) + 0.12 + (0.11/np.sqrt(n))) * D
-
+    test_stat =  (np.sqrt(len(numbers)) + 0.12 + (0.11/np.sqrt(len(numbers)))) * D
+    
     return test_stat
 
 def run_test_I(numbers):
@@ -75,10 +68,8 @@ def run_test_I(numbers):
             prev_val = "above"
 
     Z = abs((num_runs-runs_expected)/s_R)
-    if Z>1.96:
-        print("Reject Null hypothesis. Numbers are not independent.")
-    else:
-        print("Accept null hypothesis. Numbers are sufficiently independent at 5%.")
+
+    return Z
     
 def run_test_II(numbers):
     R = np.zeros(shape=6, dtype=np.int32)
@@ -135,3 +126,61 @@ def auto_corr(U, h):
     for i in range(n-h):
         s += U[i]*U[i+h]
     return s/(n-h)
+
+def make_histograms(good_nums, bad_nums, bins):
+    plt.style.use('seaborn-deep')
+    plt.hist(good_nums, bins, alpha=0.5, label='System Generator')
+    plt.hist(bad_nums, bins, alpha=0.5, label='LCG')
+    plt.legend(loc='upper right')
+    plt.show()
+
+
+def main():
+
+    # Bad LCG
+
+    M = 127
+    a = 17
+    c = 1
+    seed = 46
+
+    bad_nums = list(LCG(M, a, c, seed, 10000))
+
+    # Good psuedo-random numbers from system available generator
+
+    good_nums = np.random.randint(low=min(bad_nums), high=max(bad_nums), size=10000)
+
+    print("--- Displaying Histograms ---")
+    print(".\n.\n.\n")
+    make_histograms(good_nums, bad_nums, 10)
+
+
+    print("--- Performing chi-squared test ---")
+    
+    bad_chi2 = chi_squared(bad_nums, 10)
+    good_chi2 = chi_squared(good_nums, 10)
+    print(f"Test-statistics:\nLCG: {bad_chi2}\nSystem Generator: {good_chi2}")
+
+    print("--- Kolmogorov Smirnov ---")
+    
+    bad_KS = kolmogorov_smirnov(bad_nums)
+    good_KS = kolmogorov_smirnov(good_nums)
+    print(f"Test-statistics:\nLCG: {bad_KS}\nSystem Generator: {good_KS}")
+    print("--- Run Tests  ---")
+    print("Test:\tLCG\tSystem Generator")
+    print(f"1:\t{round(run_test_I(bad_nums), 2)}\t{round(run_test_I(good_nums), 2)}")
+    print(f"2:\t{round(run_test_II(bad_nums), 2)}\t{round(run_test_II(good_nums), 2)}")
+    print(f"3:\t{round(run_test_III(bad_nums), 2)}\t{round(run_test_III(good_nums), 2)}")
+
+    print("----- Correlation test ----")
+    print(f"LCG: {round(auto_corr(bad_nums, 100), 2)}")
+    print(f"System Generator: {round(auto_corr(good_nums, 100), 2)}")
+
+
+
+
+if __name__=="__main__":
+    main()
+
+
+

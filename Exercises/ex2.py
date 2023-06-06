@@ -12,7 +12,7 @@ def geometric_dist(U, p):
 
 def insert_into_categories(values, intervals):
     
-    new_dist = []
+    new_dist = [0 for i in range(len(intervals))]
 
     for value in values:
         for i, interval in enumerate(intervals): # Linear search    
@@ -32,13 +32,15 @@ def crude_discrete(pdf, size):
 
 def accept_reject_method(pdf, size, k=6, c=1):
     
-    X = []
+    X = [0 for i in range(len(pdf))]
     
-    while X < size:
+    while sum(X) < size:
     
         U1, U2 = np.random.random(), np.random.random()
         I = np.floor(k*U1)+1
-        if U2 <= pdf[int(I)-1]/c: X.append(I)
+        p_I = pdf[int(I)-1]
+        if U2 <= p_I/c: X.append(I)
+    
     
     return X
 
@@ -62,25 +64,25 @@ def gen_tables(pdf, k=6):
 def alias_method(pdf, size, k=6):
     F, L = gen_tables(pdf)
     X = []
-    while X < size:
+    while len(X) < size:
     
         U1, U2 = np.random.random(), np.random.random()
         I = np.floor(k*U1)+1
 
         if U2 <= F[int(I)-1]: X.append(I)
-        else: return X.append(L[int(I)-1])
+        else: X.append(L[int(I)-1])
     
     return X
 
 
-def make_bar_plots(dist1, dist2):
+def make_bar_plots(gen_dist, expected_dist):
     width = 0.8
 
-    indices = np.arange(len(dist2))
+    indices = np.arange(len(gen_dist))
 
-    plt.bar(indices, dist1, width=width, 
+    plt.bar(indices, expected_dist, width=width, 
             color='b', label='Given Distribution')
-    plt.bar([i+0.25*width for i in indices], dist2, 
+    plt.bar([i+0.25*width for i in indices], gen_dist, 
             width=0.5*width, color='r', alpha=0.5, label='Generated Distribution')
 
     plt.legend()
@@ -88,16 +90,29 @@ def make_bar_plots(dist1, dist2):
     plt.show()
 
 def compare(X, pdf):
-    c = Counter(X)
-    chisq, p = chisquare(c.values(), f_exp=[i*len(X) for i in pdf])
-    print("----- Performing chi-squared test -----\nH_0: Samples come from a common distribution.\nH_a: Samples do not share a common distribution.")
-    # print(f"Test statistic: {chisq}")
-    # print(f"P-value: {p}")
+    pdf_gen = [float(i/sum(X)) for i in X]
+    print("----- Probability Distributions -----")
+    print(f"Generated pdf: {pdf_gen}")
+    print(f"Expected pdf: {pdf}")
+    chisq, p = chisquare(X, f_exp=[i*sum(X) for i in pdf])
+    print("----- Performing chi-squared test (alpha = 5%) -----\nH_0: Samples come from a common distribution.\nH_a: Samples do not share a common distribution.")
+    print(f"Test statistic: {chisq}")
+    print(f"P-value: {p}")
+    if p < 0.05: print("Reject null hypothesis. Sufficient evidence to suggest samples come from different distributions.")
+    else: print("Accept null hypothesis. Sufficient evidence to suggest that samples come from the same distribution.")
     print("----- Visual Comparison between PDFs -----")
-    pdf_gen = [i/sum(c.values()) for i in c.values()]
     make_bar_plots(pdf_gen, pdf)
 
+def make_freq_dist(X, keys=[1,2,3,4,5,6]):
+    
+    freq = []
 
+    for i in keys:
+    
+        X.count(i)
+        freq.append(X.count(i))
+
+    return freq
 
 def main():
 
@@ -108,9 +123,15 @@ def main():
     crude_sample = crude_discrete(pdf, 10000)
     ar_sample = accept_reject_method(pdf, 10000)
     alias_sample = alias_method(pdf, 10000)
-
-    for i in [crude_sample, ar_sample, alias_sample]:
-        compare(i, pdf)
+    
+    print("----- Direct Method -----")
+    compare(crude_sample, pdf)
+    print(".\n.\n.\n")
+    print("----- Accept/Reject Method -----")
+    compare(make_freq_dist(ar_sample), pdf)
+    print(".\n.\n.\n")
+    print("----- Alias Method -----")
+    compare(make_freq_dist(alias_sample), pdf)
 
 
 if __name__=="__main__":
