@@ -91,8 +91,8 @@ def compare(X, pdf):
     c = Counter(X)
     chisq, p = chisquare(c.values(), f_exp=[i*len(X) for i in pdf])
     print("----- Performing chi-squared test -----\nH_0: Samples come from a common distribution.\nH_a: Samples do not share a common distribution.")
-    print(f"Test statistic: {chisq}")
-    print(f"P-value: {p}")
+    # print(f"Test statistic: {chisq}")
+    # print(f"P-value: {p}")
     print("----- Visual Comparison between PDFs -----")
     pdf_gen = [i/sum(c.values()) for i in c.values()]
     make_bar_plots(pdf_gen, pdf)
@@ -113,3 +113,5 @@ def main():
         compare(i, pdf)
 
 
+if __name__=="__main__":
+    main()

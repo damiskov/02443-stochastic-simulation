@@ -113,3 +113,5 @@ def main():
         compare(i, pdf)
 
 
+if __name__=="__main__":
+    main()
