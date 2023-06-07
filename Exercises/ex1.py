@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import copy
 import scipy.stats as stat
 import numpy as np
-from sklearn.linear_model import LinearRegression
 import seaborn as sns
 
 # Linear Congruential Generator
