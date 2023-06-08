@@ -177,7 +177,7 @@ def ex1():
 def ex2():
     
     U = np.random.random(size=1000)
-    ks = np.linspace(3, 6, 20)
+    ks = np.linspace(2.1, 5, 20)
     mean_gen, mean_analytical, var_gen, var_analytical = [], [], [], []
 
     for k in ks:
@@ -190,16 +190,16 @@ def ex2():
         var_analytical.append(k/(((k-1)**2)*(k-2)))
     
     plt.scatter(ks, mean_gen, label="Simulated", marker="x")
-    plt.scatter(ks, mean_analytical, label="Analytical", marker="x")
-    plt.title("Comparison between simulated mean and analytical mean")
+    plt.scatter(ks, mean_analytical, label="Theoretical", marker="x")
+    plt.title("Comparison between simulated mean and theoretical mean")
     plt.xlabel("k")
     plt.ylabel("E(x)")
     plt.legend()
     plt.show()
 
     plt.scatter(ks, var_gen, label="Simulated", marker="x")
-    plt.scatter(ks, var_analytical, label="Analytical", marker="x")
-    plt.title("Comparison between simulated variance and analytical variance")
+    plt.scatter(ks, var_analytical, label="Theoretical", marker="x")
+    plt.title("Comparison between simulated variance and heoretical variance")
     plt.xlabel("k")
     plt.ylabel("Var(x)")
     plt.legend()
@@ -229,6 +229,20 @@ def ex3():
 
     # Perform some analysis
 
+def ex4():
+    mu = 1
+    x = np.random.uniform(low=0, high=5,size=1000)
+    F_x = [1-(1+i/mu)**(-1) for i in x]
+    plt.scatter(x, F_x, marker="x", color="g", label=f"\u03BC={mu}")
+    plt.title("CDF of Simulated Pareto (composition method)")
+    plt.xlabel("x")
+    plt.legend()
+    plt.grid()
+    plt.ylabel("P(X<=x)")
+    plt.show()
+
+    
+
 
 
 
@@ -246,10 +260,14 @@ def main():
 
     ex3()
 
+    # 4 - Pareto via composition
+
+    ex4()
+
 
 
     return
 
 
 if __name__=="__main__":
-    ex3()
+    ex4()
