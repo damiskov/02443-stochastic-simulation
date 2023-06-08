@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from math import log, floor
+from math import log
 from scipy import stats
 
 
