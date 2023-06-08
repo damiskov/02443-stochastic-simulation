@@ -228,11 +228,7 @@ def ex3():
     plt.show()
 
     # Perform some analysis
-        
 
-
-
-    return
 
 
 
