@@ -230,15 +230,26 @@ def ex3():
     # Perform some analysis
 
 def ex4():
-    mu = 1
-    x = np.random.uniform(low=0, high=5,size=1000)
-    F_x = [1-(1+i/mu)**(-1) for i in x]
-    plt.scatter(x, F_x, marker="x", color="g", label=f"\u03BC={mu}")
+    mu = 2 # arbitrary mean for exponential distribution
+    Y = np.random.exponential(scale=1/mu, size=10000) # Random exponential sample Y
+    X = np.random.exponential(scale=1/Y) # Random exponential sampling of X, given Y
+
+    # Creating CDF
+
+    X_sort = sorted(X)
+    F_x = 1. * np.arange(len(X)) / (len(X) - 1)
+
+
+    
+    # x = np.random.uniform(low=0, high=20,size=100)
+    # F_x = [1-(1+i/mu)**(-1) for i in x]
+    plt.scatter(X_sort, F_x, marker="x", color="g", label=f"\u03BC={mu}")
     plt.title("CDF of Simulated Pareto (composition method)")
     plt.xlabel("x")
+    plt.xlim(0,100)
     plt.legend()
     plt.grid()
-    plt.ylabel("P(X<=x)")
+    plt.ylabel(r"$P(X \leq x)$")
     plt.show()
 
     
