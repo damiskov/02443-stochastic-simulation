@@ -16,27 +16,51 @@ def histogram(numbers, num_bins):
     plt.show()
 
 def chi_squared(numbers, num_bins):
-    n_expected = len(numbers)/num_bins
+    
+    n_expected = len(numbers)/num_bins #  Uniform distribution -> Each "bin" has an equal number of values
     l = min(numbers)
-    step = int((max(numbers)-l)/num_bins)
+    h = max(numbers)
+    step = int((h-l)/num_bins)
     test_stat = 0
+    df = num_bins-1
+
     for i in range(1, num_bins+1):
+
         n_observed = len([j for j in numbers if j >= l+step*(i-1) and j < l+step*i])
         test_stat += ((n_expected-n_observed)**2)/n_expected
-    return test_stat
+    
+    p = 1 - stat.chi2.cdf(test_stat, df)
+    
+    return round(test_stat, 2), round(p, 2)
 
 def kolmogorov_smirnov(numbers):
 
-    l = min(numbers)
-    h = max(numbers)
-    ecdf = sorted(numbers)
-    ideal = np.linspace(l, h, len(numbers))
+    s = sum(numbers)
+    ecdf = np.cumsum([i/s for i in sorted(numbers)])
+    l, h = min(numbers), max(numbers)
+    m, c =  (1/(h-l)), l/(l-h)
+    ideal = [m*i+c for i in sorted(numbers)] # Uniform distribution (ideal) -> linear cdf
+
+    # For visual comparison
+    
+    plt.plot(sorted(numbers), ideal, label="Ideal CDF")
+    plt.plot(sorted(numbers), ecdf, label="ECDF")
+    plt.legend()
+    plt.ylabel(r"$P(X \leq x)$")
+    plt.xlabel(r"$x$")
+    plt.grid()
+    plt.title("ECDF vs Ideal CDF")
+    plt.show()
+
+
     D = max(abs(np.array(ecdf) - np.array(ideal)))
     test_stat =  (np.sqrt(len(numbers)) + 0.12 + (0.11/np.sqrt(len(numbers)))) * D
     
     return test_stat
 
-def run_test_I(numbers):
+
+
+def run_test_1(numbers):
 
     median = np.median(np.array(numbers))
     n_1 = len([i for i in numbers if i > median])
@@ -70,7 +94,7 @@ def run_test_I(numbers):
 
     return Z
     
-def run_test_II(numbers):
+def run_test_2(numbers):
     R = np.zeros(shape=6, dtype=np.int32)
     current_run = 1
     for i in range(1, len(numbers)):
@@ -98,7 +122,7 @@ def run_test_II(numbers):
     return Z
 
 
-def run_test_III(numbers):
+def run_test_3(numbers):
     # converting 
     new_lst = []
     for i in range(len(numbers)-1):
@@ -126,10 +150,10 @@ def auto_corr(U, h):
         s += U[i]*U[i+h]
     return s/(n-h)
 
-def make_histograms(good_nums, bad_nums, bins):
+def make_histograms(system_nums, LCG_nums, bins):
     plt.style.use('seaborn-deep')
-    plt.hist(good_nums, bins, alpha=0.5, label='System Generator')
-    plt.hist(bad_nums, bins, alpha=0.5, label='LCG')
+    plt.hist(system_nums, bins, alpha=0.5, label='System Generator')
+    plt.hist(LCG_nums, bins, alpha=0.5, label='LCG')
     plt.legend(loc='upper right')
     plt.show()
 
@@ -143,36 +167,59 @@ def main():
     c = 1
     seed = 46
 
-    bad_nums = list(LCG(M, a, c, seed, 10000))
+    LCG_1 = list(LCG(M, a, c, seed, 10000))
+
+    # "Good" LCG
+    
+    
+    M = 100
+    a = 11
+    c = 1
+    seed = 1
+
+    LCG_2 = list(LCG(M, a, c, seed, 10000))
 
     # Good psuedo-random numbers from system available generator
 
-    good_nums = np.random.randint(low=min(bad_nums), high=max(bad_nums), size=10000)
+    sys_nums_1 = np.random.randint(low=min(LCG_1), high=max(LCG_1), size=10000)
+    sys_nums_2 = np.random.randint(low=min(LCG_2), high=max(LCG_2), size=10000)
 
+    # Exercises
+    
     print("--- Displaying Histograms ---")
+    
     print(".\n.\n.\n")
-    make_histograms(good_nums, bad_nums, 10)
+
+    make_histograms(sys_nums_1, LCG_1, 10)
+    make_histograms(sys_nums_2, LCG_2, 10)
+
 
 
     print("--- Performing chi-squared test ---")
     
-    bad_chi2 = chi_squared(bad_nums, 10)
-    good_chi2 = chi_squared(good_nums, 10)
-    print(f"Test-statistics:\nLCG: {bad_chi2}\nSystem Generator: {good_chi2}")
+    test_1_chi2 = chi_squared(LCG_1, 10)
+    test_2_chi2 = chi_squared(LCG_2, 10)
+    good_chi2 = chi_squared(sys_nums_1, 10)
+    print(f"Test-statistics:\nLCG 1: {test_1_chi2}\nLCG 2: {test_2_chi2}\nSystem Generator: {good_chi2}\n")
 
-    print("--- Kolmogorov Smirnov ---")
+    print("--- Kolmogorov Smirnov Tests ---")
     
-    bad_KS = kolmogorov_smirnov(bad_nums)
+    LCG_1_KS = kolmogorov_smirnov(test_nums)
     good_KS = kolmogorov_smirnov(good_nums)
-    print(f"Test-statistics:\nLCG: {bad_KS}\nSystem Generator: {good_KS}")
+    print(f"Test-statistics:\nLCG: {bad_KS}\nSystem Generator: {good_KS} \n")
+    
+    
+    
     print("--- Run Tests  ---")
+    
     print("Test:\tLCG\tSystem Generator")
-    print(f"1:\t{round(run_test_I(bad_nums), 2)}\t{round(run_test_I(good_nums), 2)}")
-    print(f"2:\t{round(run_test_II(bad_nums), 2)}\t{round(run_test_II(good_nums), 2)}")
-    print(f"3:\t{round(run_test_III(bad_nums), 2)}\t{round(run_test_III(good_nums), 2)}")
+    print(f"1:\t{round(run_test_1(test_nums), 2)}\t{round(run_test_1(good_nums), 2)}")
+    print(f"2:\t{round(run_test_2(test_nums), 2)}\t{round(run_test_2(good_nums), 2)}")
+    print(f"3:\t{round(run_test_3(test_nums), 2)}\t{round(run_test_3(good_nums), 2)}\n")
 
+    
     print("----- Correlation test ----")
-    print(f"LCG: {round(auto_corr(bad_nums, 100), 2)}")
+    print(f"LCG: {round(auto_corr(test_nums, 100), 2)}")
     print(f"System Generator: {round(auto_corr(good_nums, 100), 2)}")
 
 
