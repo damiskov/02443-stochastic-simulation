@@ -89,7 +89,7 @@ def make_bar_plots(gen_dist, expected_dist):
 
     plt.show()
 
-def compare(X, pdf):
+def test(X, pdf):
     pdf_gen = [float(i/sum(X)) for i in X]
     print("----- Probability Distributions -----")
     print(f"Generated pdf: {pdf_gen}")
@@ -125,13 +125,13 @@ def main():
     alias_sample = alias_method(pdf, 10000)
     
     print("----- Direct Method -----")
-    compare(crude_sample, pdf)
+    test(crude_sample, pdf)
     print(".\n.\n.\n")
     print("----- Accept/Reject Method -----")
-    compare(make_freq_dist(ar_sample), pdf)
+    test(make_freq_dist(ar_sample), pdf)
     print(".\n.\n.\n")
     print("----- Alias Method -----")
-    compare(make_freq_dist(alias_sample), pdf)
+    test(make_freq_dist(alias_sample), pdf)
 
 
 if __name__=="__main__":
