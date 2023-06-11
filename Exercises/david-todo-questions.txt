@@ -3,4 +3,5 @@ Exercise 1
 
 Exercise 2:
     - Alias test - Produces very weird results.
-    - Run test II - I think it is incorrect
+    - Run test II - I think it is incorrect.
+    - Kolmogorov-Smirnov: P-value always 1??

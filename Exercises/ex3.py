@@ -281,4 +281,4 @@ def main():
 
 
 if __name__=="__main__":
-    ex4()
+    main()
