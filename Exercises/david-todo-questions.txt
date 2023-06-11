@@ -5,3 +5,6 @@ Exercise 2:
     - Alias test - Produces very weird results.
     - Run test II - I think it is incorrect.
     - Kolmogorov-Smirnov: P-value always 1??
+
+Exercise 3:
+    - Discussion of confidence intervals.
