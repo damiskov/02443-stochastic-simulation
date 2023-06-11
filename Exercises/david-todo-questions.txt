@@ -1,0 +1,6 @@
+Exercise 1
+    - Last question - unsure of what to say
+
+Exercise 2:
+    - Alias test - Produces very weird results.
+    - Run test II - I think it is incorrect
