@@ -16,13 +16,14 @@ def doChi2(observed, expected):
     return p_val
 
 
-def expected_dist(P):
-    P_120 = np.linalg.matrix_power(P, 120)
+def get_state_vector(P, t):
 
-    p0 = P[0]
+    # Making use of Markov Property
+    
+    P_t = np.linalg.matrix_power(P, t)
+    p0 = np.array([1,0,0,0,0])
 
-
-    return np.dot(p0, P_120)
+    return np.dot(p0, P_t) 
 
 def theoretical_probability_mass():
     pi = np.array([0.9915, 0.005, 0.0025, 0, 0.001])
@@ -67,7 +68,7 @@ def MCMC():
 def get_samples(n):
     
     observed = np.zeros(5)
-
+    t = 120
     
     
     P = np.array([[0.9915, 0.005, 0.0025, 0, 0.001],
@@ -75,7 +76,7 @@ def get_samples(n):
                   [0, 0, 0.992, 0.003, 0.005],
                   [0, 0, 0, 0.991, 0.009],
                   [0, 0, 0, 0, 1]])
-    expected = expected_dist(P)
+    expected = get_state_vector(P, t)
 
     for i in range(n):
         
@@ -83,20 +84,22 @@ def get_samples(n):
             print(f"simulated {i} samples")
         
         sequence_of_states = MCMC()
-        current_dist = np.array(make_dist(sequence_of_states))
-        observed += current_dist
+        state_vector = np.array(make_dist(sequence_of_states))
+        observed += state_vector
 
-    observed = observed/sum(observed) # Normalising
+    observed = observed/n # Mean state vector
     
     
     print(f"Observed: {observed}")
     print(f"Expected: {expected}")
 
-    plt.bar(list(range(1, len(observed)+1)), observed, color="b", label="Sample", alpha=0.5, width=0.8)
-    plt.bar(list(range(1, len(observed)+1)), expected,  color="r", label="Expected", alpha=0.5, width=0.8)
-    plt.xticks(list(range(1, len(observed)+1)))
+    x = np.array(list(range(1, len(observed)+1)))
+
+    plt.bar(x-0.2, observed, color="lightblue", label="Sample",alpha=0.8, width=0.4, align='center')
+    plt.bar(x+0.2, expected,  color="lightcoral", label="Analtical", alpha=0.8, width=0.4, align='center')
+    plt.xticks(x)
     plt.xlabel(r"i")
-    plt.title("Distribution of States (at t=120)")
+    plt.title("State Vectors "+r"$(t=120)$")
     plt.legend()
     plt.grid()
     plt.show()

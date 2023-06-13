@@ -14,39 +14,42 @@ def MCMC():
     
     N = len(P[0])  
     
-    # initial state
+    # initial state = 0
 
-    J = [0]
+    states = [0]
     
     local_reappearance = False # Boolean recording if cancer reappears locally
 
-    while J[-1] != N-1: # Death occurs in final column
+    while states[-1] != N-1: # Death occurs in final column
 
-        currrent_i = J[-1] # Current i state (as defined by previous transition)
+        currrent_state = states[-1] # Current i state (as defined by previous transition)
 
         # performing transition
 
-        transition_probabilities = P[currrent_i]
-        new_j = np.random.choice(list(range(N)), p = transition_probabilities) # New column
+        transition_probabilities = P[currrent_state]
+        new_state = np.random.choice(list(range(N)), p = transition_probabilities) # New column
 
         # Updating
 
-        if new_j == 1: # If transitioning into state 2, local reappearance has occured
+        if new_state == 1: # If transitioning into state 2, local reappearance has occured
 
             local_reappearance = True
 
-        J.append(new_j)
+        states.append(new_state)
 
-    lifetime = (len(J)-1)/12
+    lifetime = (len(states)-1)/12
 
     return lifetime, local_reappearance
 
 
 def plot_distribution_lifetimes(lifetimes):
-    plt.hist(lifetimes, 20, color="b", alpha=0.5)
+    mean = round(np.mean(lifetimes), 2)
+    plt.hist(lifetimes, 20, color="lightsteelblue", alpha=0.8, edgecolor='gray')
+    plt.vlines(mean,ymin=0, ymax=200, color="lightcoral", alpha=0.8, label=r"$\bar{x}$"+f"= {mean}")
     plt.grid()
-    plt.ylabel("count")
-    plt.xlabel("years after tumor removal")
+    plt.legend()
+    plt.ylabel("frequency")
+    plt.xlabel("lifetime after tumor removal (years)")
     plt.title("Distribution of lifetimes")
     plt.show()
 
@@ -56,13 +59,21 @@ def gen_analyse_samples(n):
     
     lifetimes, local_reappearances = [], 0
 
+
+    # Random sampling for n times
+
     for i in range(n):
         
         if i%100==0:
             print(f"simulated {i} samples")
+
+        # Perform MCMC
+        
         lifetime, local_reappearance = MCMC()
         lifetimes.append(lifetime)
         if local_reappearance: local_reappearances += 1
+
+
     print("Finished generating samples")
     plot_distribution_lifetimes(lifetimes)
     print(f"Mean lifetime after tumor removal: {round(np.mean(lifetimes), 2)}")
