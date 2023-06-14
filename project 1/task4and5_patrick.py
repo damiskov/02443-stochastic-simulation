@@ -70,8 +70,6 @@ def gen_analyse_samples(task, n):
     if task == "task4":
         while len(lifetimes) < n:
             
-            if len(lifetimes)%100==0:
-                print(f"simulated {len(lifetimes)} samples")
 
             lifetime, local_reappearance, twelve_m_reappearence = MCMC()
 
@@ -139,4 +137,4 @@ def gen_analyse_samples(task, n):
     
     
 if __name__=="__main__":
-    gen_analyse_samples("task5", 1000)
+    gen_analyse_samples("task4", 1000)
