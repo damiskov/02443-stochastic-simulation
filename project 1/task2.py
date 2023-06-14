@@ -89,11 +89,12 @@ def get_samples(n):
 
     x = np.array(list(range(1, len(observed)+1)))
 
-    plt.bar(x-0.2, observed, color="lightblue", label="Sample",alpha=0.8, width=0.4, align='center')
-    plt.bar(x+0.2, expected,  color="lightcoral", label="Analtical", alpha=0.8, width=0.4, align='center')
+    plt.bar(x-0.2, observed, color="lightblue", label="Simulated",alpha=0.8, width=0.4, align='center')
+    plt.bar(x+0.2, expected,  color="lightcoral", label="Analytical", alpha=0.8, width=0.4, align='center')
     plt.xticks(x)
-    plt.xlabel(r"i")
-    plt.title("State Vectors "+r"$(t=120)$")
+    plt.xlabel(r"$i$")
+    plt.ylabel(r"$P(X = i)$")
+    plt.title("Probability Distribution "+r"$(t=120)$")
     plt.legend()
     plt.grid()
     plt.show()
@@ -110,7 +111,7 @@ def get_samples(n):
 
     
 if __name__=="__main__":
-    get_samples(1000)
+    get_samples(10000)
 
     
 

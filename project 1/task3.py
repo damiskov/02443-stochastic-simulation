@@ -63,14 +63,14 @@ def compare_simulated_analytic():
     lifetimes_a = [calc_P_T_t(t) for t in x]
 
     plt.hist(lifetimes_sim, 20, color="lightsteelblue", alpha=0.8, edgecolor='gray',density=True)
-    plt.plot(x, lifetimes_a, color="lightcoral")
-    plt.vlines(mean_sim, ymin=0, ymax=0.0026, color="darkkhaki", label=r"$\bar{x}$"+f" simulated= {round(mean_sim, 2)}")
-    plt.vlines(mean_a, ymin=0, ymax=0.0026, color="olivedrab", label=r"$\bar{x}$"+f" analytical= {round(mean_a, 2)}")
+    plt.plot(x, lifetimes_a, color="lightcoral", label="analytical")
+    plt.vlines(mean_sim, ymin=0, ymax=0.0026, color="darkkhaki", label=r"$\bar{x}_s=$"+f"{round(mean_sim, 2)}")
+    plt.vlines(mean_a, ymin=0, ymax=0.0026, color="olivedrab", label=r"$\bar{x}_a=$"+f"{round(mean_a, 2)}")
     plt.grid()
     plt.legend()
     plt.ylabel(r"$P(T=t$)")
     plt.xlabel(r"$t$"+" (months)")
-    plt.title("Distribution of lifetimes")
+    plt.title("Probability Distribution of Lifetimes")
     plt.show()
 
 
