@@ -11,9 +11,8 @@ def make_dist(p):
     
 def doChi2(observed, expected):
 
-    _, p_val = stats.chisquare(f_obs=observed, f_exp=expected)
 
-    return p_val
+    return stats.chisquare(f_obs=observed, f_exp=expected)
 
 
 def get_state_vector(P, t):
@@ -101,8 +100,9 @@ def get_samples(n):
 
     
 
-    p = doChi2(observed, expected)
+    t, p = doChi2(observed, expected)
     print("chi-2 test:")
+    print(f"Test statistic: {t}")
     print(f"P-value: {p}")
 
 

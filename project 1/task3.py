@@ -4,6 +4,10 @@ from scipy import stats
 from task1 import MCMC
 
 
+def gen_ecdf(numbers):
+    y = np.cumsum(numbers)/sum(numbers)
+    return y
+
 def calc_P_T_t(t):
     P = np.array([[0.9915, 0.005, 0.0025, 0, 0.001],
                   [0, 0.986, 0.005, 0.004, 0.005],
@@ -63,7 +67,7 @@ def compare_simulated_analytic():
     lifetimes_a = [calc_P_T_t(t) for t in x]
 
     plt.hist(lifetimes_sim, 20, color="lightsteelblue", alpha=0.8, edgecolor='gray',density=True)
-    plt.plot(x, lifetimes_a, color="lightcoral", label="analytical")
+    plt.plot(x, lifetimes_a, color="lightcoral", label="theoretical")
     plt.vlines(mean_sim, ymin=0, ymax=0.0026, color="darkkhaki", label=r"$\bar{x}_s=$"+f"{round(mean_sim, 2)}")
     plt.vlines(mean_a, ymin=0, ymax=0.0026, color="olivedrab", label=r"$\bar{x}_a=$"+f"{round(mean_a, 2)}")
     plt.grid()
@@ -72,6 +76,21 @@ def compare_simulated_analytic():
     plt.xlabel(r"$t$"+" (months)")
     plt.title("Probability Distribution of Lifetimes")
     plt.show()
+
+    # _, p = stats.chisquare(f_obs=lifetimes_sim, f_exp=[2000*i for i in lifetimes_a])
+    # print(f"P value: {p}")
+
+    # #ecdfs
+    # x_s = np.sort(lifetimes_sim)
+    # x_a = np.sort([2000*i for i in lifetimes_a])
+
+    # y_s = gen_ecdf(x_s)
+    # y_a = gen_ecdf(x_a)
+
+    # plt.plot(x_s, y_s)
+    # plt.plot(x_a, y_a)
+    # plt.show()
+
 
 
 
