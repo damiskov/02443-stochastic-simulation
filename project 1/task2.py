@@ -25,14 +25,8 @@ def get_state_vector(P, t):
 
     return np.dot(p0, P_t) 
 
-def theoretical_probability_mass():
-    pi = np.array([0.9915, 0.005, 0.0025, 0, 0.001])
+
     
-
-
-
-
-
 # Markov Chain Monte Carlo
 
 def MCMC():
@@ -47,23 +41,23 @@ def MCMC():
     
     # initial state
     
-    J = [0]
+    states = [0]
     
     for _ in range(120): # t = 0 -> 120
 
-        currrent_i = J[-1] # Current i state (as defined by previous transition)
+        currrent_state = states[-1] # Current state (as defined by previous transition)
 
         # performing transition
 
-        transition_probabilities = P[currrent_i]
-        new_j = np.random.choice(list(range(N)), p = transition_probabilities) # New column
+        transition_probabilities = P[currrent_state]
+        new_state = np.random.choice(list(range(N)), p = transition_probabilities) # New column
 
         # Updating
 
-        J.append(new_j)
+        states.append(new_state)
 
 
-    return J
+    return states
 
 def get_samples(n):
     

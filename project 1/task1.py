@@ -37,7 +37,7 @@ def MCMC():
 
         states.append(new_state)
 
-    lifetime = (len(states)-1)/12
+    lifetime = len(states)-1
 
     return lifetime, local_reappearance
 
@@ -49,7 +49,7 @@ def plot_distribution_lifetimes(lifetimes):
     plt.grid()
     plt.legend()
     plt.ylabel("frequency")
-    plt.xlabel("lifetime after tumor removal (years)")
+    plt.xlabel("lifetime after tumor removal (months)")
     plt.title("Distribution of lifetimes")
     plt.show()
 
