@@ -49,7 +49,7 @@ def MCMC_task12():
         current_state = new_state
 
 
-    return states, intervals, lifetime
+    return states, intervals
 
 
 
@@ -57,31 +57,81 @@ def get_Y(n=1000):
 
     Y = []
 
-    for _ in range(5):
+    for _ in range(n):
         
-        states, intervals, l = MCMC_task12()
-        observed_states = {}
+        states, intervals = MCMC_task12()
+    
+        observed_states = []
         time = 0
         lifetime = intervals[-1][1]
-
-        print(lifetime)
-        print(l)
 
         while time <= lifetime:
             
             for i, state_time in enumerate(intervals): # Linear search through intervals
                 
-                if time >= state_time[0] and time <= state_time[1]: # Interval contains current time
+                if time >= state_time[0] and time < state_time[1]: # Interval contains current time
                     
-                    observed_states[time] = states[i] + 1
+                    observed_states.append(states[i])
             
             time += 48
 
-        print(observed_states)
+        observed_states.append(4)
             
 
+        Y.append(observed_states)
+
+    
+    return Y
+
+def get_sojourns(Y):
+
+    S = {i: 0 for i in range(5)}
+
+    for state in range(5):
+        for row in Y:
+            
+            state_freq = row.count(state)
+            if state_freq > 0:
+                time_in_state = (state_freq-1)*48
+                S[state] += time_in_state
+    return S
+
+def get_jumps(Y):
+
+    N = np.zeros(shape=(5,5))
+
+    for woman in Y:
         
+        states = list(set(woman))
+
+        for i in range(len(states)-1):
+            N[states[i]][states[i+1]] += 1
+
+    return N
+
+def create_Q(S, N):
+
+    Q = np.zeros(shape=(5,5))
+
+    for i in range(len(Q)): # rows
+        for j in range(len(Q[0])): # columns
+            
+            if i!=j:
+                Q[i][j] = N[i][j]/S[i]
         
+        Q[i][i] = -sum(Q[i])
+        
+    Q[-1] = np.zeros(5)
+
+    return Q
 
 
-get_Y()
+def task12():
+    Y = get_Y()
+    S = get_sojourns(Y)
+    N = get_jumps(Y)
+    Q = create_Q(S, N)
+    print(f"Created Q:\n{Q}")
+
+if __name__=="__main__":
+    task12()
