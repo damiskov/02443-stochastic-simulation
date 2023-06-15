@@ -88,7 +88,7 @@ def get_samples(n):
 
     x = np.array(list(range(1, len(observed)+1)))
 
-    plt.bar(x-0.2, observed, color="lightblue", label="Simulated",alpha=0.8, width=0.4, align='center')
+    plt.bar(x-0.2, observed, color="lightsteelblue", label="Simulated",alpha=0.8, width=0.4, align='center')
     plt.bar(x+0.2, expected,  color="lightcoral", label="Analytical", alpha=0.8, width=0.4, align='center')
     plt.xticks(x)
     plt.xlabel(r"$i$")
