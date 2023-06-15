@@ -105,6 +105,7 @@ def get_jumps(Y):
         states = list(set(woman))
 
         for i in range(len(states)-1):
+
             N[states[i]][states[i+1]] += 1
 
     return N
@@ -114,6 +115,7 @@ def create_Q(S, N):
     Q = np.zeros(shape=(5,5))
 
     for i in range(len(Q)): # rows
+        
         for j in range(len(Q[0])): # columns
             
             if i!=j:
@@ -124,6 +126,8 @@ def create_Q(S, N):
     Q[-1] = np.zeros(5)
 
     return Q
+
+
 
 
 def task12():
