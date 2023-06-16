@@ -51,7 +51,7 @@ def compare_simulated_theoretical(n):
     plt.legend()
     plt.ylabel(r"$P(T \leq t)$")
     plt.xlabel(r"$t$")
-    plt.title("Cumulative Probability Density of Lifetimes (Theoretical vs Simulated)")
+    plt.title("Cumulative Density of Lifetimes (Theoretical vs Simulated)")
     plt.show()
 
     # Kolomogorov-Smirnov test ...

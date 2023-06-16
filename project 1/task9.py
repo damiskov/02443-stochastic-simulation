@@ -73,6 +73,8 @@ def eval_treatment(n=1000):
 
     plt.hist(lifetimes_treatment,bins=30, color="cornflowerblue", alpha=0.5, label="Treatment",edgecolor="gray")
     plt.hist(lifetimes_no_treatment,bins=30, color="lightcoral", alpha=0.5, label="No treatment",edgecolor="gray")
+    plt.vlines(np.mean(lifetimes_no_treatment), ymin=0, ymax=140, color="darkkhaki", label=r"$\bar{x}=$"+f"{round(np.mean(lifetimes_no_treatment), 2)}")
+    plt.vlines(np.mean(lifetimes_treatment), ymin=0, ymax=140, color="olivedrab", label=r"$\bar{x}_t=$"+f"{round(np.mean(lifetimes_treatment), 2)}")
     plt.title("Distribution of lifetimes before and after treatment")
     plt.xlabel(r"Lifetime")
     plt.ylabel("Frequency")
