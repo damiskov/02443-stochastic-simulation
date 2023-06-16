@@ -133,6 +133,7 @@ def create_Q(S, N):
 def task12():
     Y = get_Y()
     S = get_sojourns(Y)
+    print(Y[0])
     N = get_jumps(Y)
     Q = create_Q(S, N)
     print(f"Created Q:\n{Q}")
