@@ -199,30 +199,13 @@ def update_diagonal_elems(Q):
 
     for i in range(len(Q)):
         for j in range (len(Q)):
-            sum = 0
             if i == j:
-                    for k in range(i + 1, len(Q)):
-                        sum += Q[i][k]
-                    Q[i][i] = -sum
-            
-            
+                sum = 0
+                for k in range(i + 1, len(Q)):
+                    sum += Q[i][k]
+                Q[i][i] = -sum
 
-    
     return Q          
-
-
-#sum soujourn for different i's
-def sum_soujourn(trajectories, states_intervals):
-    S = np.zeros(5)
-    for p in range(len(trajectories)):
-        state = trajectories[p]
-        intervals = states_intervals[p]
-        print (f"state = {state}")
-        print (f"time = {intervals}")
-        for i in range (len(state)):
-            S[state[i]] += 48*i
-    print(f"S = {S}")
-    return S
 
             
 
@@ -245,34 +228,39 @@ Q0 = np.array([[0, 0.0025, 0.00125, 0, 0.001],
 Q0 = update_diagonal_elems(Q0)
 
 print(Q0)
-
 observations = get_Y(1000, Q)
 
-path = []
-N = np.zeros((5, 5))
-S = np.zeros(5)
 
 
+# change matrix Q and set it as Q1
+Q1 = Q 
 
-Q1 = np.array([[-0.4, 0.1, 0.1, 0.1, 0.1],
-                    [0, -0.3, 0.1, 0.1, 0.1],
-                    [0, 0, -0.2, 0.1, 0.1],
-                    [0, 0, 0, -0.1, 0.1],
-                    [0, 0, 0, 0, 0]])
-Q1 = Q / 10 + 30 * np.identity(5)
 Q1 = update_diagonal_elems(Q1)
+
 
 # PROGRAM LOOP --------------------------------------------------------------------------------------------------------------
 
-for _ in range (10):
+N = np.zeros((5, 5))
+S = np.zeros(5)
+
+errors_collection = []
+err = np.inf
+
+# for k in range (8):
+k = 0
+while err >= 0.0001:
+    print(k)
+    N = np.zeros((5, 5))
+    S = np.zeros(5)
     for obs in observations:
-        Q_before = Q1
+        
+        # Q_before = Q1
         for i in range (len(obs)-1):
             initial_state = obs[i]
             target_state = obs[i+1]
             accepted = False
             while accepted == False:
-                new_sim, jumps, sojourn = MCMC_13(Q_before, initial_state, target_state)
+                new_sim, jumps, sojourn = MCMC_13(Q1, initial_state, target_state)
                 # print(obs)
                 # print(f"New sim = {new_sim}")
                 # print(f"Initial = {initial_state}")
@@ -286,20 +274,37 @@ for _ in range (10):
                     accepted = True
         
     # update Q after going through all observations
-    Q1 = Q_before
+    Q_before = Q1
+
+    Q1 = np.zeros((5, 5))
     for i in range(len(Q1)):
         for j in range(len(Q1)):
             if i != j:
-                Q1[i][j] = N[i][j] / S[i]
+                print("updated")
+                Q1[i][j] = (N[i][j] / S[i])
     
     #set last row to zeros and update diagonal elements
     Q1 = update_diagonal_elems(Q1)
 
+    mat = (Q_before - Q1)
+    err = np.linalg.norm(mat , ord=np.inf)
+    errors_collection.append(err)
 
-    print(f"Q = {Q1}")
-    print(f"ERROR: {np.linalg.norm(Q_before - Q1, ord=np.inf)}")
+    print(f"Q_before = {Q_before}")
+    print(f"Q_updated = {Q1}")
+    # print(f"Q_new = {Q_new}")
+    
+    print(f"ERROR: {err}")
+    k += 1
 
 
+print(f"Q = {Q1}")
+
+plt.plot([i for i in range(len(errors_collection))], errors_collection, color="lightcoral")
+plt.ylabel(r"$||Q_{k+1}-Q_{k}||_{\infty}$")
+plt.xlabel(r"$k$")
+plt.title("Error value vs Iteration")
+plt.show()
 
 
 
