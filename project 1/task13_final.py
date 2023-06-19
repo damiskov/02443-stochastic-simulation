@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 from task12 import get_Y
 from task12 import create_Q
 
@@ -46,11 +47,10 @@ def generate_partial_seq(initial_state, target_state, Q, time_frame):
         while time < time_frame and states[-1]!=4:
 
             current_state = states[-1]
-            scale=-1/Q[current_state][current_state]
-            time_in_current_state = round(np.random.exponential(scale=scale))
-            time += time_in_current_state
-            sojourn_times[current_state] += time_in_current_state
-
+            # scale=-1/Q[current_state][current_state]
+            # time_in_current_state = round(np.random.exponential(scale=scale))
+            # time += time_in_current_state
+            # sojourn_times[current_state] += time_in_current_state
             transition_probabilities = []
 
             for i in range(N): # Generating transition 
@@ -61,7 +61,33 @@ def generate_partial_seq(initial_state, target_state, Q, time_frame):
                     transition_probabilities.append(0) # Cannot remain in same state any longer
 
             new_state = np.random.choice(list(range(N)), p = transition_probabilities) # New column
-            states.append(new_state)
+            # states.append(new_state)
+            scale=-1/Q[current_state][current_state]
+            time_in_current_state = round(np.random.exponential(scale=scale))
+            # time += time_in_current_state
+            # sojourn_times[current_state] += time_in_current_state
+
+            if new_state == target_state: # Sequence to target state generated
+                # Calculating time in state prior to target state
+                if time+time_in_current_state >= time_frame:
+                    
+                    time_in_current_state = time_frame - time
+                    sojourn_times[current_state] += time_in_current_state
+
+                elif time+time_in_current_state < time_frame:
+                    
+                    sojourn_times[current_state] = time_in_current_state 
+                    time_in_target_state = time_frame - time
+                    sojourn_times[target_state] = time_in_target_state
+
+
+                return states[:-1], sojourn_times
+            
+            else:
+                
+                time += time_in_current_state
+                sojourn_times[current_state] += time_in_current_state
+                states.append(new_state)
 
         # print(f"Potential Sequence: {states}")
         # Out of loop - time > time_frame
@@ -88,7 +114,7 @@ def simulate_seq(observed, Q):
         # print(f"Target: {target}")
         seq, times = generate_partial_seq(initial, target, Q, time_frame)
         generated_seq += seq
-        sojourn_times += times
+        sojourn_times += np.array(times)
 
     generated_seq += [4]
 
@@ -101,19 +127,19 @@ def main_loop(epsilon):
     errors = []
     k = 0
     Y = get_Y() # set of 1000 samples of observed data (using target Q)
-    # Q_k = np.array(
-    #     [[-(0.0025+0.00125+0+0.001), 0.0025, 0.00125, 0, 0.001],
-    #     [0, -(0.002+0.005+0.004), 0.004, 0.002, 0.005],
-    #     [0, 0, -(0.003+0.005), 0.003, 0.005],
-    #     [0, 0, 0, -0.009, 0.009],
-    #     [0, 0, 0, 0, 0]]
-    # ) # Initial guess
+    Q_k = np.array(
+        [[-(0.0025+0.00125+0+0.001), 0.0025, 0.00125, 0, 0.001],
+        [0, -(0.002+0.005+0.004), 0.004, 0.002, 0.005],
+        [0, 0, -(0.003+0.005), 0.003, 0.005],
+        [0, 0, 0, -0.009, 0.009],
+        [0, 0, 0, 0, 0]]
+    ) # Initial guess
 
-    Q_k = np.array([[-0.0085, 0.005, 0.0025, 0, 0.001],
-                  [0, -0.014, 0.005, 0.004, 0.005],
-                  [0, 0, -0.008, 0.003, 0.005],
-                  [0, 0, 0, -0.009, 0.009],
-                  [0, 0, 0, 0, 0]])
+    # Q_k = np.array([[-0.0085, 0.005, 0.0025, 0, 0.001],
+    #               [0, -0.014, 0.005, 0.004, 0.005],
+    #               [0, 0, -0.008, 0.003, 0.005],
+    #               [0, 0, 0, -0.009, 0.009],
+    #               [0, 0, 0, 0, 0]])
     err = np.inf
     
     while err > epsilon and k < 100:
@@ -132,8 +158,10 @@ def main_loop(epsilon):
 
         # print(N_k)
         # print(S_k)
+        time.sleep(1)
     
         Q_k_1 = create_Q(S_k, N_k)
+        print(f"New Q:\n{Q_k_1}")
 
         err = np.linalg.norm(Q_k_1-Q_k, ord=np.inf)
         k += 1
