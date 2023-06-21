@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def gillespie(N, max_time, beta, gamma):
 
-    S, I, R, t = [N-10], [10], [0], [0]
+    S, I, R, t = [N-1000], [1000], [0], [0]
     props=[beta*I[-1]*S[-1]/N, gamma*I[-1]]
 
     while t[-1] < max_time and (S[-1] + I[-1] >= 1) and sum(props) > 0:
@@ -21,7 +21,7 @@ def gillespie(N, max_time, beta, gamma):
         if total_propensity == 0:
             break
         
-        tau = np.random.exponential(scale=1/propensities)
+        tau = np.random.exponential(scale=1/total_propensity)
 
         t.append(t[-1]+tau)
 
@@ -46,7 +46,7 @@ def gillespie(N, max_time, beta, gamma):
 def discrete_ODE_SIR(N, max_time, time_frame, beta, gamma):
     
     # Initial set up
-    S, I, R = [N-10], [10], [0]
+    S, I, R = [N-1000], [1000], [0]
     t = np.linspace(0,max_time, int(max_time/time_frame))
 
     for _ in t[1:]:
@@ -93,7 +93,7 @@ def stochastic_ebola_SIR_simulation(N=1000, max_time=1000, beta = 0.4, gamma = 0
 
     plt.show()
 
-def discrete_covid_SIR_simulation(N=1000, max_time=1000, time_frame=1, beta = 0.5, gamma = 0.3):
+def discrete_covid_SIR_simulation(N=100000, max_time=1000, time_frame=1, beta = 0.5, gamma = 0.3):
 
     S, I, R = discrete_ODE_SIR(N, max_time, time_frame, beta, gamma)
     x = np.linspace(0, max_time, int(max_time/time_frame))
@@ -111,7 +111,7 @@ def discrete_covid_SIR_simulation(N=1000, max_time=1000, time_frame=1, beta = 0.
     plt.show()
 
 
-def stochastic_covid_SIR_simulation(N=1000, max_time=1000, beta = 0.5, gamma = 0.3):
+def stochastic_covid_SIR_simulation(N=100000, max_time=1000, beta = 0.5, gamma = 0.3):
 
     S, I, R = gillespie(N, max_time, beta, gamma)
     x = np.linspace(0, max_time, len(S))
