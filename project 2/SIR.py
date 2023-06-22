@@ -51,14 +51,13 @@ class SIR:
 
         for _ in t[1::]:
 
-            l = self.Beta*(I[-1])/population # some probability?
+            l = self.Beta*(I[-1])/population # Rate of new infections
     
-            # Success rates
-            ifrac = 1.0 - np.exp(-l) # Probability of infection 
-            rfrac = 1.0 - np.exp(-self.Gamma) # Probability of recovery
+            infection_probability = 1.0 - np.exp(-l) # Probability of infection 
+            recovery_probability = 1.0 - np.exp(-self.Gamma) # Probability of recovery
     
-            infection = np.random.binomial(S[-1],ifrac) # Number of new infected
-            recovery = np.random.binomial(I[-1],rfrac) # Number of new recovered
+            infection = np.random.binomial(S[-1],infection_probability) # Number of new infected
+            recovery = np.random.binomial(I[-1],recovery_probability) # Number of new recovered
 
             S.append(S[-1]-infection)
             I.append(I[-1]+infection-recovery)

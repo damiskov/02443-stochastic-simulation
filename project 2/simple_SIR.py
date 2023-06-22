@@ -16,18 +16,18 @@ def test_disease(name, beta, gamma, time):
     # Plotting
     # All on the same plot, with different shades of the same color for each S, I, R
     plt.style.use('ggplot')
-    plt.plot(S_ODE, color='darkblue', label='Discrete S')
-    plt.plot(I_ODE, color='darkred', label='Discrete I')
-    plt.plot(R_ODE, color='darkgreen',  label='Discrete R')
-    num_sim = 50
+    plt.plot(S_ODE, color='darkblue', label='Deterministic S')
+    plt.plot(I_ODE, color='darkred', label='Deterministic I')
+    plt.plot(R_ODE, color='darkgreen',  label='Deterministic R')
+    num_sim = 100
     for _ in range(num_sim):
         S_stoch, I_stoch, R_stoch = sir.simulate_stochastic(1000, 10, time)
         S_stoch_sum += S_stoch
         I_stoch_sum += I_stoch
         R_stoch_sum += R_stoch
-        plt.plot(S_stoch, color='dodgerblue', alpha=0.1)
-        plt.plot(I_stoch, color='red', alpha=0.1)
-        plt.plot(R_stoch, color='seagreen', alpha=0.1)
+        plt.plot(S_stoch, color='lightsteelblue', alpha=0.1)
+        plt.plot(I_stoch, color='lightcoral', alpha=0.1)
+        plt.plot(R_stoch, color='palegreen', alpha=0.1)
     plt.plot(S_stoch_sum/num_sim, color='dodgerblue', label='Average S', linestyle='--')
     plt.plot(I_stoch_sum/num_sim, color='red', label='Average I', linestyle='--')
     plt.plot(R_stoch_sum/num_sim, color='seagreen', label='Average R', linestyle='--')
@@ -119,8 +119,8 @@ def measure_effect_of_total_population():
     for pop in populations:
         for _ in range(50):
             sir = SIR("", 0.4, 0.2)
-            S_ODE, I_ODE, R_ODE = sir.simulate_ODE(pop, 10, time)
-            S_stoch, I_stoch, R_stoch = sir.simulate_stochastic(pop, 10, time)
+            S_ODE, I_ODE, R_ODE = sir.simulate_ODE(pop, pop/100, time)
+            S_stoch, I_stoch, R_stoch = sir.simulate_stochastic(pop, pop/100, time)
             S_stoch_sum += S_stoch
             I_stoch_sum += I_stoch
             R_stoch_sum += R_stoch
@@ -177,12 +177,26 @@ def measure_effect_of_starting_infected():
 
 
 if __name__=="__main__":
-    # test_disease("Ebola", 0.4, 0.3, 100)
-    # test_disease("COVID-19", 0.4, 0.2, 100)
-    # test_disease("Influenza", 1/3, 1/7, 200)
-    # test_disease("Measles", 0.9, 0.2, 100)
+    # test_disease("Ebola", 0.71, 0.4152, 100)
+    """
+    "Estimating the Reproduction Number of Ebola Virus (EBOV) during the 2014 Outbreak in West Africa"
+    published in PLOS Currents Outbreaks in 2014
+    (doi: 10.1371/currents.outbreaks.91afb5e0f279e7f29e7056095255b288)
+    """
+    test_disease("COVID-19", 0.328, 0.1, 100)
+    """"The Novel Coronavirus, 2019-nCoV, Is Highly Contagious and More Infectious Than Initially Estimated"
+    published in the journal MedRxiv in 2020
+    (doi: 10.1101/2020.02.07.20021154)."""
+    # test_disease("Influenza", 0.4, 0.3, 100)
+    """
+    Different Epidemic Curves for Severe Acute Respiratory Syndrome Reveal Similar Impacts of Control Measures"
+    published in the Proceedings of the National Academy of Sciences in 2004 
+    (doi: 10.1073/pnas.0402950101).
+    """
+    # test_disease("Measles", 0.857, 0.0714, 100)
+    """"Infectious Diseases of Humans: Dynamics and Control" published in 1992."""
     # test_disease("Test 1", 0.5, 0.02, 200)
-    # test_disease("Test", 0.5, 0.2, 200)
+    # test_disease("Test", 0.0800, 0.0681, 1000)
 
-    measure_effect_of_total_population()
-    measure_effect_of_starting_infected()
+    # measure_effect_of_total_population()
+    # measure_effect_of_starting_infected()
