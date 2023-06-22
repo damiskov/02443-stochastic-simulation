@@ -78,7 +78,7 @@ class SEIR:
             infection_probability = 1.0 - np.exp(-l) # Probability of infection 
             recovery_probability = 1.0 - np.exp(-self.Gamma) # Probability of recovery
 
-            exposed = np.random.binomial(S[-1], infection_probability) # Number of new exposed
+            exposed = np.random.binomial(S[-1], exposure_probability) # Number of new exposed
             infection = np.random.binomial(S[-1],infection_probability) # Number of new infected
             recovery = np.random.binomial(I[-1],recovery_probability) # Number of new recovered
 
@@ -88,5 +88,3 @@ class SEIR:
             R.append(R[-1]+recovery)
             
         return S, I, R
-
-        return
